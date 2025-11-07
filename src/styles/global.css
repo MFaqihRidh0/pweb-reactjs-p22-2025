@@ -1,0 +1,111 @@
+:root {
+  --bg: #0b1020;
+  --card: #111731;
+  --muted: #b7c2d6;
+  --text: #e9eefc;
+  --primary: #6ea8fe;
+  --danger: #ff6b6b;
+  --success: #65d18a;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Cantarell, Noto Sans, Arial, 'Apple Color Emoji', 'Segoe UI Emoji';
+  background: linear-gradient(180deg, #0b1020, #0b1228);
+  color: var(--text);
+}
+
+.container {
+  width: 100%;
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+a { color: var(--primary); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* Simple utility classes */
+.row { display: flex; gap: .75rem; align-items: center; flex-wrap: wrap; }
+.col { display: flex; flex-direction: column; gap: .5rem; }
+
+.card {
+  background: var(--card);
+  border: 1px solid #1b2244;
+  border-radius: 14px;
+  padding: 1rem;
+  box-shadow: 0 10px 20px rgba(0,0,0,.35);
+}
+
+.input, .select, .button {
+  border-radius: 10px;
+  border: 1px solid #28305e;
+  background: #0c1430;
+  color: var(--text);
+  padding: .6rem .8rem;
+  outline: none;
+}
+
+.input:focus, .select:focus { border-color: var(--primary); }
+
+.button {
+  background: #16204a;
+  cursor: pointer;
+  transition: transform .02s ease, background .2s;
+}
+.button.primary { background: #29448a; }
+.button.danger { background: #5a1f2a; }
+.button.success { background: #1e4934; }
+.button:active { transform: translateY(1px); }
+
+.badge {
+  padding: .2rem .5rem;
+  border: 1px solid #2a356b;
+  background: #0e1736;
+  border-radius: 999px;
+  font-size: .75rem;
+  color: var(--muted);
+}
+
+.table { width: 100%; border-collapse: collapse; }
+.table th, .table td { padding: .6rem .5rem; border-bottom: 1px solid #1a2348; }
+.table th { text-align: left; color: var(--muted); font-weight: 600; }
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0,1fr));
+  gap: 1rem;
+}
+@media (min-width: 640px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 980px) { .grid { grid-template-columns: repeat(3, 1fr); } }
+
+/* Navbar */
+.navbar {
+  background: #0a0f22;
+  border-bottom: 1px solid #1b2244;
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+.navbar-inner {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  justify-content: space-between;
+  padding: .75rem 1rem;
+  max-width: 1080px;
+  margin: 0 auto;
+}
+.brand { font-weight: 700; letter-spacing: .2px; }
+.nav-links { display: flex; gap: .75rem; flex-wrap: wrap; }
+.nav-right { display: flex; gap: .5rem; align-items: center; }
+
+/* States */
+.center { display: grid; place-items: center; padding: 2rem; }
+.spinner { width: 28px; height: 28px; border: 3px solid #223063; border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.alert { border: 1px solid #50333a; background: #2a0f17; color: #ffb3b3; padding: .8rem; border-radius: .6rem; }
+.empty { border: 1px dashed #334; padding: 1.2rem; border-radius: .6rem; color: #b9c2db; background: #0b1332; }
