@@ -35,7 +35,7 @@ Website katalog & transaksi buku terhubung REST API dari modul sebelumnya.
   - `GET /genres`
   - `GET /books`, `GET /books/:id`, `POST /books`, `DELETE /books/:id`
   - `GET /transactions`, `GET /transactions/:id`, `POST /transactions`
-- Jika skema berbeda, sesuaikan di folder `src/api/*`. 
+- Jika skema berbeda, sesuaikan di folder `src/api/*`.
 - Pagination pada daftar memanfaatkan client-side; bila backend mendukung query `?page=&limit=&search=...`, Anda dapat mengubah `src/pages/*` untuk memanggil endpoint tersebut.
 
 ## Struktur

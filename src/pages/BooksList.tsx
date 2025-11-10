@@ -8,6 +8,7 @@ import EmptyState from '../components/EmptyState'
 import Pagination from '../components/Pagination'
 import ConfirmDialog from '../components/ConfirmDialog'
 import { useCart } from '../context/CartContext'
+import EditBookDialog from '../components/EditBookDialog'
 
 export default function BooksList() {
   const [books, setBooks] = useState<Book[]>([])
@@ -15,25 +16,24 @@ export default function BooksList() {
   const [error, setError] = useState('')
   const [search, setSearch] = useState('')
   const [condition, setCondition] = useState<Condition>('')
-  const [sortBy, setSortBy] = useState<'title' | 'publish_date'>('title')
+  const [sortBy, setSortBy] = useState<'title' | 'publication_year'>('title')
   const [order, setOrder] = useState<'asc' | 'desc'>('asc')
   const [page, setPage] = useState(1)
   const perPage = 9
   const { add } = useCart()
 
-async function load() {
-  setLoading(true)
-  setError('')
-  try {
-    const arr = await fetchBooks()
-    setBooks(arr)
-  } catch (err: any) {
-    setError(err?.response?.data?.message ?? 'Gagal memuat data buku. Periksa API.')
-  } finally {
-    setLoading(false)
+  async function load() {
+    setLoading(true)
+    setError('')
+    try {
+      const arr = await fetchBooks()
+      setBooks(arr)
+    } catch (err: any) {
+      setError(err?.response?.data?.message ?? 'Gagal memuat data buku. Periksa API.')
+    } finally {
+      setLoading(false)
+    }
   }
-}
-
 
   useEffect(() => { load() }, [])
 
@@ -41,14 +41,22 @@ async function load() {
     const list = Array.isArray(books) ? books : []
 
     let data = list.filter(b => {
-      const s = search.toLowerCase()
-      const matchesSearch = !s || [b.title, b.writer, b.publisher, b.genre?.name].some(x => (x || '').toLowerCase().includes(s))
+      const s = (search || '').toLowerCase()
+      const genreText = typeof b.genre === 'string'
+        ? b.genre
+        : (b.genre && (b as any).genre.name) ? (b as any).genre.name : ''
+
+      const matchesSearch =
+        !s ||
+        [b.title, b.writer, b.publisher, genreText]
+          .some(x => (x || '').toString().toLowerCase().includes(s))
+
       const matchesCond = !condition || (b.condition ?? '') === condition
       return matchesSearch && matchesCond
     })
 
     data.sort((a: any, b: any) => {
-      const key = sortBy === 'title' ? 'title' : 'publish_date'
+      const key = sortBy === 'title' ? 'title' : 'publication_year'
       const va = (a[key] ?? '').toString().toLowerCase()
       const vb = (b[key] ?? '').toString().toLowerCase()
       if (va < vb) return order === 'asc' ? -1 : 1
@@ -97,7 +105,7 @@ async function load() {
             </select>
             <select className="select" value={sortBy} onChange={e => setSortBy(e.target.value as any)}>
               <option value="title">Urut Judul</option>
-              <option value="publish_date">Urut Tanggal Terbit</option>
+              <option value="publication_year">Urut Tahun Terbit</option>
             </select>
             <select className="select" value={order} onChange={e => setOrder(e.target.value as any)}>
               <option value="asc">Naik</option>
@@ -108,29 +116,53 @@ async function load() {
       </div>
 
       <div className="grid">
-        {pageData.map(b => (
-          <div className="card" key={b.id}>
-            <div className="col">
-              <div className="row" style={{ justifyContent: 'space-between' }}>
-                <h3 style={{ margin: 0 }}>{b.title}</h3>
-                <span className="badge">{b.genre?.name ?? 'No Genre'}</span>
-              </div>
-              <div className="row" style={{ justifyContent: 'space-between' }}>
-                <small className="badge">{b.writer}</small>
-                <small className="badge">Rp {b.price?.toLocaleString('id-ID')}</small>
-              </div>
-              <div className="row" style={{ justifyContent: 'space-between' }}>
-                <small className="badge">Stok: {b.stock_quantity ?? b.stock}</small>
-                <small className="badge">{b.condition || 'N/A'}</small>
-              </div>
-              <div className="row" style={{ marginTop: '.5rem' }}>
-                <Link className="button" to={`/books/${b.id}`}>Detail</Link>
-                <button className="button success" onClick={() => add(b)}>Tambah ke Keranjang</button>
-                <ConfirmDialog ask={`Hapus buku "${b.title}"?`} onYes={() => onDelete(b.id)} />
+        {pageData.map(b => {
+          const genreText = typeof b.genre === 'string'
+            ? b.genre
+            : (b.genre && (b as any).genre.name) ? (b as any).genre.name : ''
+
+          const stock = (typeof b.stock_quantity === 'number' ? b.stock_quantity : (typeof (b as any).stock === 'number' ? (b as any).stock : 0))
+
+          return (
+            <div className="card" key={b.id}>
+              <div className="col">
+                <div className="row" style={{ justifyContent: 'space-between' }}>
+                  <h3 style={{ margin: 0 }}>{b.title}</h3>
+                  <span className="badge">{genreText || 'No Genre'}</span>
+                </div>
+                <div className="row" style={{ justifyContent: 'space-between' }}>
+                  <small className="badge">{b.writer}</small>
+                  <small className="badge">Rp {Number(b.price ?? 0).toLocaleString('id-ID')}</small>
+                </div>
+                <div className="row" style={{ justifyContent: 'space-between' }}>
+                  <small className="badge">Stok: {stock}</small>
+                  <small className="badge">{b.condition || 'N/A'}</small>
+                </div>
+
+                <div className="row" style={{ marginTop: '.5rem' }}>
+                  <Link className="button" to={`/books/${b.id}`}>Detail</Link>
+
+                  <button
+                    className="button success"
+                    onClick={() => {
+                      if (stock <= 0) {
+                        alert('Stok habis, tidak bisa ditambahkan ke keranjang!')
+                        return
+                      }
+                      add(b)
+                    }}
+                  >
+                    Tambah ke Keranjang
+                  </button>
+
+                  <EditBookDialog book={b} onUpdated={load} />
+
+                  <ConfirmDialog ask={`Hapus buku "${b.title}"?`} onYes={() => onDelete(b.id)} />
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          )
+        })}
       </div>
 
       <Pagination page={page} total={total} perPage={perPage} onPage={setPage} />

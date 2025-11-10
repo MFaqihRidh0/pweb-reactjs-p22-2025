@@ -1,6 +1,7 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
 import Navbar from './components/Navbar'
 import Login from './pages/Login'
+import Register from './pages/Register'
 import BooksList from './pages/BooksList'
 import BookDetail from './pages/BookDetail'
 import AddBook from './pages/AddBook'
@@ -18,6 +19,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Navigate to="/login" replace />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
 
           <Route element={<ProtectedRoute />}>
             <Route path="/books" element={<BooksList />} />

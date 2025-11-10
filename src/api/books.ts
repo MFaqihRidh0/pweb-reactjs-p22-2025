@@ -30,3 +30,13 @@ export async function deleteBook(id: string) {
   const res = await api.delete(`/books/${id}`)
   return res.data as { message?: string }
 }
+
+// PATCH /books/:id
+export async function updateBook(id: string, payload: {
+  description?: string
+  price?: number
+  stock_quantity?: number
+}) {
+  const { data } = await api.patch(`/books/${id}`, payload)
+  return data?.data
+}

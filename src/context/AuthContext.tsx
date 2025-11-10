@@ -8,7 +8,7 @@ interface AuthContextType {
   token: string | null
   loading: boolean
   login: (email: string, password: string) => Promise<void>
-  register: (email: string, password: string, name?: string) => Promise<void>
+  register: (email: string, password: string, username?: string) => Promise<void>
   logout: () => void
 }
 
@@ -19,36 +19,52 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [token, setTok] = useState<string | null>(getToken())
   const [loading, setLoading] = useState<boolean>(true)
 
+  // ambil user saat ada token
   useEffect(() => {
     const t = getToken()
     if (!t) {
       setLoading(false)
       return
     }
-    meApi().then((u) => setUser(u)).catch(() => {
-      clearToken(); setTok(null)
-    }).finally(() => setLoading(false))
+    meApi()
+      .then((u) => setUser(u))
+      .catch(() => {
+        clearToken()
+        setTok(null)
+      })
+      .finally(() => setLoading(false))
   }, [])
 
+  // 🔹 login: dapatkan token → simpan → ambil data user dari /me
   async function login(email: string, password: string) {
     const res = await loginApi(email, password)
-    setToken(res.access_token)
-    setTok(res.access_token)
+    const accessToken = res?.access_token
+    if (!accessToken) throw new Error('Access token tidak ditemukan.')
+
+    setToken(accessToken)
+    setTok(accessToken)
+
     try {
-      const u = res.user ?? await meApi()
+      const u = await meApi()
       setUser(u)
-    } catch {}
+    } catch (err) {
+      console.error('Gagal ambil data user:', err)
+    }
   }
 
-  async function register(email: string, password: string, name?: string) {
-    await registerApi(email, password, name)
+  // 🔹 register: hanya daftar tanpa auto-login
+  async function register(email: string, password: string, username?: string) {
+    await registerApi(email, password, username)
+    alert('Registrasi berhasil! Silakan login menggunakan akun Anda.')
+    // redirect manual ke login
+    window.location.href = '/login'
   }
 
+  // 🔹 logout: hapus token & reset state
   function logout() {
     clearToken()
     setTok(null)
     setUser(null)
-    // soft redirect
     window.location.href = '/login'
   }
 

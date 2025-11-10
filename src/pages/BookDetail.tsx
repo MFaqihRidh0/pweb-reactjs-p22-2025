@@ -12,7 +12,7 @@ interface BookDetail {
   publisher?: string
   price: number
   stock_quantity: number
-  genre?: { name: string } | null
+  genre?: string | null // ← ubah ini
   publication_year?: number
   description?: string
 }
@@ -30,6 +30,7 @@ export default function BookDetail() {
     api
       .get(`/books/${id}`)
       .then((res) => {
+        console.log('📘 Book detail:', res.data)
         setBook(res.data?.data ?? res.data)
       })
       .catch((err) => {
@@ -50,7 +51,7 @@ export default function BookDetail() {
         <p><strong>Penerbit:</strong> {book.publisher ?? '-'}</p>
         <p><strong>Harga:</strong> Rp {book.price.toLocaleString('id-ID')}</p>
         <p><strong>Stok:</strong> {book.stock_quantity}</p>
-        <p><strong>Genre:</strong> {book.genre?.name ?? '-'}</p>
+        <p><strong>Genre:</strong> {book.genre ?? '-'}</p> {/* ← fix utama */}
         <p><strong>Tahun Terbit:</strong> {book.publication_year ?? '-'}</p>
         <p><strong>Deskripsi:</strong> {book.description ?? 'Tidak ada deskripsi.'}</p>
       </div>

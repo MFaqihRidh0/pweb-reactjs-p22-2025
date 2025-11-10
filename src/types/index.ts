@@ -4,6 +4,7 @@ export type Condition = 'NEW' | 'USED' | 'REFURBISHED' | ''
 export interface User {
   id: string
   email: string
+  username?: string   // ✅ tambahkan ini
   name?: string
 }
 

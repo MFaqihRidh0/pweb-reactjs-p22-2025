@@ -109,3 +109,56 @@ a:hover { text-decoration: underline; }
 
 .alert { border: 1px solid #50333a; background: #2a0f17; color: #ffb3b3; padding: .8rem; border-radius: .6rem; }
 .empty { border: 1px dashed #334; padding: 1.2rem; border-radius: .6rem; color: #b9c2db; background: #0b1332; }
+
+/* Modal overlay & content */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.modal-content {
+  background: var(--card);
+  border: 1px solid #1b2244;
+  border-radius: 14px;
+  padding: 1.5rem;
+  width: 400px;
+  max-width: 90%;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+}
+
+.modal-content h3 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+}
+
+.modal-content label {
+  display: block;
+  font-weight: 500;
+  margin-top: 0.75rem;
+  margin-bottom: 0.25rem;
+}
+
+.modal-content textarea,
+.modal-content input {
+  width: 100%;
+}
+
+.modal .button {
+  min-width: 100px;
+}
+
+.button.warning {
+  background: #60450e;
+  color: #f3d48a;
+}
+.button.warning:hover {
+  background: #7b5b12;
+}
